@@ -370,12 +370,19 @@ grub-btrfs improves the grub bootloader by adding a btrfs snapshots sub-menu, al
 
 We will assume your snapshots is in a subvolume that is mounted in `/etc/fstab`, which is done in [Snapper](#snapper).
 
-If you are not on Kali Linux, add Kali Linux kali-last-snapshot brancb APT repo. If you are already are Kali Linux, skip this block.
+If you are not on Kali Linux, add Kali Linux kali-last-snapshot branch APT repo, allow grub-btrfs, and block all other packages to prevent breaking system. If you are already are Kali Linux, skip this block.
 ```
 sudo apt update
 sudo apt install gnupg wget -y
 wget -qO - https://archive.kali.org/archive-key.asc | sudo gpg --dearmor -o /etc/apt/keyrings/kali.gpg
 echo 'deb [signed-by=/etc/apt/keyrings/kali.gpg] http://http.kali.org/kali kali-last-snapshot main contrib non-free non-free-firmware' | sudo tee /etc/apt/sources.list.d/kali.list >/dev/null
+echo 'Package: grub-btrfs
+Pin: origin http.kali.org
+Pin-Priority: 500
+
+Package: *
+Pin: origin http.kali.org
+Pin-Priority: -1' | sudo tee /etc/apt/preferences.d/kali >/dev/null
 ```
 Install:
 ```
