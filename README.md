@@ -103,7 +103,6 @@ Replace `20G` with your desired swap size. If you want to use hibernate (aka sus
 Check:
 ```
 swapon --show
-free -h
 ```
 
 ## Hibernate aka Suspend to Disk
@@ -287,4 +286,3 @@ You can pass multiple numbers to delete multiple snapshots, e.g.,
 ```
 sudo snapper -c root delete 35 36
 ```
-
