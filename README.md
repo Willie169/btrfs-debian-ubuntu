@@ -91,17 +91,10 @@ NAME           TYPE      SIZE USED PRIO
 
 ## Swap
 
-Remove existing swap file:
+Remove existing swap file and create and turn on a new one:
 ```
 sudo swapoff /swap/swapfile
 sudo rm /swap/swapfile
-```
-Optionally print memory information:
-```
-free -h
-```
-Create and turn on new swap file:
-```
 sudo btrfs filesystem mkswapfile --size 20G /swap/swapfile
 sudo swapon /swap/swapfile
 ```
@@ -110,6 +103,7 @@ Replace `20G` with your desired swap size. If you want to use hibernate (aka sus
 Check:
 ```
 swapon --show
+free -h
 ```
 
 ## Hibernate aka Suspend to Disk
@@ -126,44 +120,20 @@ For more information, refer to [Arch Wiki](https://wiki.archlinux.org/title/Powe
 
 To enable hibernate, first create a swap file whose size is greater than your RAM size (the `total` size of `Mem` as printed in `free -h`). Refer to [Swap](#swap).
 
-And then, find the block device of your current filesystem:
+And then, add `resume` and `resume_offset` to `/etc/default/grub`:
 ```
-findmnt -no SOURCE /
-```
-Example output:
-```
-/dev/nvme0n1p4[/@]
-```
-Find the UUID of it, with `/dev/nvme0n1p4` below replaced with the output of `findmnt -no SOURCE /` without `[/@]` or similar suffix. The output will be denoted as `<uuid>` afterwards.
-```
-blkid -s UUID -o value /dev/nvme0n1p4
-```
-Example output:
-```
-d5488b10-d932-462d-8cde-3ec4d8ac9102
-```
-Find the offset of the swap file. The output will be denoted as `<offset>` afterwards.
-```
-sudo btrfs inspect-internal map-swapfile -r /swap/swapfile
-```
-Edit `/etc/default/grub`. Change the line
-```
-GRUB_CMDLINE_LINUX_DEFAULT='quiet splash'
-```
-to
-```
-GRUB_CMDLINE_LINUX_DEFAULT='quiet splash resume=UUID=<uuid> resume_offset=<offset>'
-```
-Update and reboot:
-```
+SOURCE=$(findmnt -no SOURCE / | sed 's/\[\/@\]//')
+UUID=$(blkid -s UUID -o value "$SOURCE")
+OFFSET=$(sudo btrfs inspect-internal map-swapfile -r /swap/swapfile)
+RESUME="resume=UUID=${UUID} resume_offset=${OFFSET}"
+LINE=$(cat /etc/default/grub | grep GRUB_CMDLINE_LINUX_DEFAULT | head -1)
+NEWLINE=$(echo $LINE | sed 's/ *resume=[A-Za-z0-9=-]*//; s/ *resume_offset=[0-9]*//; s/ *'"'"'[ \t]*$/ '"${RESUME}'"'/')
+sudo sed -i "s/$LINE/$NEWLINE/" /etc/default/grub
 sudo update-grub
 sudo update-initramfs -u
 sudo reboot
 ```
-After reboot, print the parameters passed to the kernel at the time it is started. The output should contain the `resume=UUID=<uuid> resume_offset=<offset>` you set earlier.
-```
-cat /proc/cmdline
-```
+
 ### Hibernate
 
 To hibernate your system:
@@ -245,47 +215,17 @@ findmnt "$DIR"
 
 ## Snapper
 
-### Install and Enable
+### Get Started
 
+Install, create config for root, enable, and mount:
 ```
 sudo apt update
 sudo apt install snapper -y
 sudo snapper -c root create-config /
 sudo systemctl enable --now snapper-timeline.timer
 sudo systemctl enable --now snapper-cleanup.timer
-```
-Find the block device of your current filesystem:
-```
-findmnt -no SOURCE /
-```
-Example output:
-```
-/dev/nvme0n1p4[/@]
-```
-Test:
-```
-sudo mount -o subvol=/@/.snapshots /dev/nvme0n1p4 /.snapshots
-```
-Check:
-```
-findmnt /.snapshots
-```
-Example output:
-```
-TARGET      SOURCE                        FSTYPE OPTIONS
-/.snapshots /dev/nvme0n1p4[/@/.snapshots] btrfs  rw,relatime,ssd,discard=async,space_cache=v2,autodefrag,subvolid=275,subvol=/@/.snapshots
-```
-Find the UUID of the block device, with `/dev/nvme0n1p4` below replaced with the output of `findmnt -no SOURCE /` without `[/@]` or similar suffix, and store in `$UUID`.
-```
-UUID="$(blkid -s UUID -o value /dev/nvme0n1p4)"
-echo $UUID
-```
-Example output:
-```
-d5488b10-d932-462d-8cde-3ec4d8ac9102
-```
-Make mounting permanent by adding to `/etc/fstab`:
-```
+SOURCE=$(findmnt -no SOURCE / | sed 's/\[\/@\]//')
+UUID=$(blkid -s UUID -o value "$SOURCE")
 echo "UUID=${UUID} /.snapshots btrfs subvol=/@/.snapshots,defaults,noatime,autodefrag 0 0" | sudo tee -a /etc/fstab >/dev/null
 ```
 
@@ -294,7 +234,7 @@ echo "UUID=${UUID} /.snapshots btrfs subvol=/@/.snapshots,defaults,noatime,autod
 ```
 sudo snapper -c <name> create-config <subvolume_mount_path>
 ```
-Note that `snapper -c root create-config /` is already run in the previous session.
+Note that `snapper -c root create-config /` is already run in the previous section.
 
 List configs:
 ```
