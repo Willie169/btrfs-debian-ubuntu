@@ -166,17 +166,10 @@ Suppose the subvolume you want to create is in `$DIR` (absolute path, e.g., `/da
 sudo mkdir -p "$(dirname "$DIR")"
 sudo btrfs subvolume create "$DIR"
 ```
-And then, find the block device of your current filesystem:
+Test mounting:
 ```
-findmnt -no SOURCE /
-```
-Example output:
-```
-/dev/nvme0n1p4[/@]
-```
-Test:
-```
-sudo mount -o subvol=/@"$DIR" /dev/nvme0n1p4 "$DIR"
+SOURCE=$(findmnt -no SOURCE / | sed 's/\[\/@\]//')
+sudo mount -o subvol=/@"$DIR" "$SOURCE" "$DIR"
 ```
 Check:
 ```
@@ -187,30 +180,21 @@ Example output:
 TARGET SOURCE                  FSTYPE OPTIONS
 /data  /dev/nvme0n1p4[/@/data] btrfs  rw,relatime,ssd,discard=async,space_cache=v2,autodefrag,subvolid=306,subvol=/@/data
 ```
-Find the UUID of the block device, with `/dev/nvme0n1p4` below replaced with the output of `findmnt -no SOURCE /` without `[/@]` or similar suffix, and store in `$UUID`.
-```
-UUID="$(blkid -s UUID -o value /dev/nvme0n1p4)"
-echo $UUID
-```
-Example output:
-```
-d5488b10-d932-462d-8cde-3ec4d8ac9102
-```
 Make mounting permanent by adding to `/etc/fstab`:
 ```
+SOURCE=$(findmnt -no SOURCE / | sed 's/\[\/@\]//')
+UUID=$(blkid -s UUID -o value "$SOURCE")
 echo "UUID=${UUID} ${DIR} btrfs subvol=/@${DIR},defaults,noatime,autodefrag 0 0" | sudo tee -a /etc/fstab >/dev/null
 ```
 or with zstd compression:
 ```
+SOURCE=$(findmnt -no SOURCE / | sed 's/\[\/@\]//')
+UUID=$(blkid -s UUID -o value "$SOURCE")
 echo "UUID=${UUID} ${DIR} btrfs subvol=/@${DIR},defaults,noatime,autodefrag,compress=zstd 0 0" | sudo tee -a /etc/fstab >/dev/null
 ```
 Reboot:
 ```
 sudo reboot
-```
-After reboot, add back your `$DIR` variable and check:
-```
-findmnt "$DIR"
 ```
 
 ## Snapper
