@@ -215,9 +215,9 @@ echo "UUID=${UUID} /.snapshots btrfs subvol=/@/.snapshots,defaults,noatime,autod
 ### Create Config
 
 ```
-sudo snapper -c <name> create-config <subvolume_mount_path>
+sudo snapper -c <config_name> create-config <subvolume_mount_path>
 ```
-Note that `snapper -c root create-config /` is already run in the previous section.
+Note that `snapper -c root create-config /` has already been run in the previous section.
 
 List configs:
 ```
@@ -228,9 +228,9 @@ sudo snapper list-configs
 
 List snapshots:
 ```
-sudo snapper -c <name> list
+sudo snapper -c <config_name> list
 ```
-Compare snapshots: `<fist_#>` and `<second_#>` are the values in the `#` column in `sudo snapper -c <name> list` for the two snapshots.
+Compare snapshots: `<fist_#>` and `<second_#>` are the values in the `#` column in `sudo snapper -c <config_name> list` for the two snapshots.
 ```
 sudo snapper diff <fist_#>..<second_#>
 ```
@@ -238,7 +238,7 @@ sudo snapper diff <fist_#>..<second_#>
 ### Edit Config
 
 ```
-sudo vim /etc/snapper/configs/<name>
+sudo vim /etc/snapper/configs/<config_name>
 ```
 Enable automatic snapshots creation:
 ```
@@ -265,22 +265,22 @@ NUMBER_LIMIT="50"
 
 Type `single`:
 ```
-sudo snapper -c <name> create --description <description>
+sudo snapper -c <config_name> create --description <description>
 ```
-Type `pre`: The number outputted is the `<pre_#>` you later use when creating `post` snapshot. You can also find it in the `#` column in `sudo snapper -c <name> list`.
+Type `pre`: The number outputted is the `<pre_#>` you later use when creating `post` snapshot. You can also find it in the `#` column in `sudo snapper -c <config_name> list`.
 ```
-sudo snapper -c <name> create --type pre --description <description> --print-number
+sudo snapper -c <config_name> create --type pre --description <description> --print-number
 ```
-Type `post`: must be linked to a `pre` snapshot. In `sudo snapper -c <name> list`, the `<pre_#>` will be in the `Pre #` column in the `post` snapshot.
+Type `post`: must be linked to a `pre` snapshot. In `sudo snapper -c <config_name> list`, the `<pre_#>` will be in the `Pre #` column in the `post` snapshot.
 ```
-sudo snapper -c <name> create --type post --pre-number <pre_#> --description <description>
+sudo snapper -c <config_name> create --type post --pre-number <pre_#> --description <description>
 ```
 
 ### Manually Delete Snapshots
 
-`<#>` is the value in the `#` column in `sudo snapper -c <name> list` for the snapshot.
+`<#>` is the value in the `#` column in `sudo snapper -c <config_name> list` for the snapshot.
 ```
-sudo snapper -c <name> delete <#>
+sudo snapper -c <config_name> delete <#>
 ```
 You can pass multiple numbers to delete multiple snapshots, e.g.,
 ```
