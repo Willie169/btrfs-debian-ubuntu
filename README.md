@@ -205,6 +205,7 @@ Install, create config for root, enable, and mount:
 sudo apt update
 sudo apt install snapper -y
 sudo snapper -c root create-config /
+sudo snapper -c home create-config /home
 sudo systemctl enable --now snapper-timeline.timer
 sudo systemctl enable --now snapper-cleanup.timer
 SOURCE=$(findmnt -no SOURCE / | sed 's/\[\/@\]//')
@@ -215,9 +216,9 @@ echo "UUID=${UUID} /.snapshots btrfs subvol=/@/.snapshots,defaults,noatime,autod
 ### Create Config
 
 ```
-sudo snapper -c <config_name> create-config <subvolume_mount_path>
+sudo snapper -c <config_name> create-config <subvolume_path>
 ```
-Note that `snapper -c root create-config /` has already been run in the previous section.
+Note that `root` for `/` and `home` for `/home` has already been created in the previous section.
 
 List configs:
 ```
