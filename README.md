@@ -2,6 +2,16 @@
 
 Btrfs on Debian or its derivatives such as Ubuntu.
 
+## Table of Contents
+
+* [System Installation](#system-installation)
+* [Check](#check)
+* [Swap](#swap)
+* [Hibernate aka Suspend to Disk](#hibernate-aka-suspend-to-disk)
+* [ZRAM](#zram)
+* [Create and Mount Subvolumes](#create-and-mount-subvolumes)
+* [Snapper](#snapper)
+
 ## System Installation
 
 Select Btrfs when installing your OS.
