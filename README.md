@@ -11,6 +11,7 @@ Btrfs on Debian or its derivatives such as Ubuntu.
 * [ZRAM](#zram)
 * [Create and Mount Subvolumes](#create-and-mount-subvolumes)
 * [Snapper](#snapper)
+* [Resize](#resize)
 
 ## System Installation
 
@@ -297,3 +298,18 @@ You can pass multiple numbers to delete multiple snapshots, e.g.,
 ```
 sudo snapper -c root delete 35 36
 ```
+
+### Resize
+
+When enlarging, enlarge the partition first and then enlarge the file system. When shrinking, shrink the file system first and then shrink the partition. To resize the file system,
+```
+sudo btrfs filesystem resize <size|max|+size|-size> <path>
+```
+e.g.,
+```
+sudo btrfs filesystem resize max /
+sudo btrfs filesystem resize 80G /
+sudo btrfs filesystem resize +20G /
+sudo btrfs filesystem resize -20G /
+```
+
