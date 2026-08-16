@@ -165,15 +165,13 @@ swap-priority = 100' | sudo tee /etc/systemd/zram-generator.conf >/dev/null
 ```
 Optionally configure parameters to optimize swap on ZRAM, e.g.,
 ```
-echo 'vm.swappiness = 100
-vm.page-cluster = 0
-vm.watermark_boost_factor = 0
+echo 'vm.swappiness = 180
+vm.watermark_boost_factor = 10000
 vm.watermark_scale_factor = 125
-vm.dirty_bytes = 268435456
-vm.dirty_background_bytes = 134217728
-vm.max_map_count = 2147483642
-fs.inotify.max_user_instances = 1024' | sudo tee /etc/sysctl.d/99-vm-zram-parameters.conf >/dev/null
+vm.page-cluster = 0' | sudo tee /etc/sysctl.d/99-vm-zram-parameters.conf >/dev/null
 ```
+See [Arch wiki zram](https://wiki.archlinux.org/title/Zram) for more information.
+
 Reboot:
 ```
 sudo reboot
