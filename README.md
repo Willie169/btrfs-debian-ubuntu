@@ -154,14 +154,28 @@ In desktop environment such as KDE Plasma, the hibernate option may be shown bes
 
 ## ZRAM
 
-Configure ZRAM with `ram / 2` replaced with your desired ZRAM size relative to RAM size (`ram`) and reboot.
+Configure ZRAM with size relative to RAM size (`ram`) or in MiB, e.g.,
 ```
 sudo apt update
 sudo apt install systemd-zram-generator -y
 echo '[zram0]
-zram-size = ram / 2
+zram-size = min(ram * 3 / 4, ram - 4096)
 compression-algorithm = zstd
 swap-priority = 100' | sudo tee /etc/systemd/zram-generator.conf >/dev/null
+```
+Optionally configure parameters to optimize swap on ZRAM, e.g.,
+```
+echo 'vm.swappiness = 100
+vm.page-cluster = 0
+vm.watermark_boost_factor = 0
+vm.watermark_scale_factor = 125
+vm.dirty_bytes = 268435456
+vm.dirty_background_bytes = 134217728
+vm.max_map_count = 2147483642
+fs.inotify.max_user_instances = 1024' | sudo tee /etc/sysctl.d/99-vm-zram-parameters.conf >/dev/null
+```
+Reboot:
+```
 sudo reboot
 ```
 Check:
