@@ -154,7 +154,7 @@ In desktop environment such as KDE Plasma, the hibernate option may be shown bes
 
 ## ZRAM
 
-Configure ZRAM with size relative to RAM size (`ram`) or in MiB, e.g.,
+Configure ZRAM with size relative to RAM size (`ram`) or in MiB, e.g., (The following example only works on device with more than 4 GiB RAM.)
 ```
 sudo apt update
 sudo apt install systemd-zram-generator -y
