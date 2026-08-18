@@ -262,27 +262,11 @@ sudo snapper diff <fist_#>..<second_#>
 ### Edit Config
 
 ```
-sudo vim /etc/snapper/configs/<config_name>
+sudo snapper -c <config_name> set-config <configs>
 ```
-Enable automatic snapshots creation:
+e.g.,
 ```
-TIMELINE_CREATE="yes"
-```
-Enable automatic snapshots cleanup:
-```
-TIMELINE_CLEANUP="yes"
-```
-Control retention:
-```
-TIMELINE_LIMIT_HOURLY="10"
-TIMELINE_LIMIT_DAILY="10"
-TIMELINE_LIMIT_WEEKLY="0"
-TIMELINE_LIMIT_MONTHLY="10"
-TIMELINE_LIMIT_YEARLY="10"
-```
-Number-based cleanup:
-```
-NUMBER_LIMIT="50"
+sudo snapper -c root set-config SPACE_LIMIT=0.2 FREE_LIMIT=0.2 BACKGROUND_COMPARISON=yes COMPRESSION=gzip NUMBER_CLEANUP=yes NUMBER_MIN_AGE=3600 NUMBER_LIMIT=10 NUMBER_LIMIT_IMPORTANT=10 TIMELINE_CREATE=yes TIMELINE_CLEANUP=yes TIMELINE_MIN_AGE=3600 TIMELINE_LIMIT_HOURLY=10 TIMELINE_LIMIT_DAILY=10 TIMELINE_LIMIT_WEEKLY=0 TIMELINE_LIMIT_MONTHLY=10 TIMELINE_LIMIT_QUARTERLY=0 TIMELINE_LIMIT_YEARLY=0 EMPTY_PRE_POST_CLEANUP=yes EMPTY_PRE_POST_MIN_AGE=0
 ```
 
 ### Manually Create Snapshots
