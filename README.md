@@ -137,7 +137,7 @@ UUID=$(blkid -s UUID -o value "$SOURCE")
 OFFSET=$(sudo btrfs inspect-internal map-swapfile -r /swap/swapfile)
 RESUME="resume=UUID=${UUID} resume_offset=${OFFSET}"
 LINE=$(cat /etc/default/grub | grep GRUB_CMDLINE_LINUX_DEFAULT | head -1)
-NEWLINE=$(echo $LINE | sed 's/ *resume=[A-Za-z0-9=-]*//; s/ *resume_offset=[0-9]*//; s/ *'"'"'[ \t]*$/ '"${RESUME}'"'/')
+NEWLINE=$(echo $LINE | sed -E 's/ *resume=[A-Za-z0-9=-]*//; s/ *resume_offset=[0-9]*//; s/ *(["'"'"'])[ \t]*$/ '"${RESUME}"'\1/')
 sudo sed -i "s/$LINE/$NEWLINE/" /etc/default/grub
 sudo update-grub
 sudo update-initramfs -u
