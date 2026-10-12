@@ -154,12 +154,12 @@ In desktop environment such as KDE Plasma, the hibernate option may be shown bes
 
 ## ZRAM
 
-Configure ZRAM with size relative to RAM size (`ram`) or in MiB, e.g., (The following example only works on device with more than 4 GiB RAM.)
+Configure ZRAM with size relative to RAM size (`ram`) or in MiB, e.g.,
 ```
 sudo apt update
 sudo apt install systemd-zram-generator -y
 echo '[zram0]
-zram-size = min(ram * 3 / 4, ram - 4096)
+zram-size = ram / 2
 compression-algorithm = zstd
 swap-priority = 100' | sudo tee /etc/systemd/zram-generator.conf >/dev/null
 ```
